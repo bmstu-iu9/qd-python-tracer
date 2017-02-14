@@ -14,7 +14,9 @@ CODELINE = (r'^(?P<spaces>\s*)'
             r'|((?P<defkw>def\s*)(?P<funcname>\w+)(?P<params>\(.*\):))'
             r'|((?P<returnkw>return)(?P<returnexpr>.*))'
             r'|((?P<calledfunc>\w+)(?P<calledfuncparams>\(.*\)))'
+            r'|((?P<from>from)(?P<frommodule>.*)(?P<importstar>import\s*\*))'
             r')$')
+RE_CODELINE = re.compile(CODELINE)
 
 def preproc_file(input_name, output_name, format_name):
     with open(input_name) as fin, \
@@ -29,8 +31,8 @@ def preproc_file(input_name, output_name, format_name):
             ('defkw', preproc_defkw, 'Function def:'),
             ('returnkw', preproc_return, 'Return:'),
             ('calledfunc', preproc_callfunc, 'Call func:'),
+            ('from', preproc_from, 'From:'),
         ]
-        re_line = re.compile(CODELINE)
         lines_out = []
         logic_funcs = []
 
@@ -38,7 +40,7 @@ def preproc_file(input_name, output_name, format_name):
             line = line.rstrip()
             print("{0:3} {1}".format(num, line), file=ffmt)
 
-            parsed = re_line.match(line)
+            parsed = RE_CODELINE.match(line)
             for group, preproc, message in FORMATTERS:
                 if parsed.group(group):
                     groupdict = parsed.groupdict()
@@ -57,15 +59,27 @@ def preproc_file(input_name, output_name, format_name):
                     return False
             num += 1
 
-        for line in lines_out:
+        for line in logic_funcs + lines_out:
             print(line, file = fout)
     return True
 
 
 def preproc_logic(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-    lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
+    (fmt_expr, vars) = expr_format(groups['logicexpr'])
+    groups['fmt_expr'] = fmt_expr
+    groups['args'] = ', '.join(vars)
+    logic_func = ('def trace_logic_func_{num}({args}):\n'
+                  '    trace_res = {logicexpr}\n'
+                  '    print(\'{num:3} {logickw}\' + {fmt_expr} + '
+                  '\': --- {{!r}}\'.format(trace_res))\n'
+                  '    return trace_res\n'
+                  .format(**groups))
+    logic_funcs.append(logic_func)
+    lines_out.append('{spaces}{logickw} trace_logic_func_{num}({args}):'
                      .format(**groups))
+    #lines_out.append(line)
+    #lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
+    #                 .format(**groups))
 
 def preproc_else(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
@@ -77,8 +91,12 @@ def preproc_assign(groups, line, lines_out, logic_funcs):
     lines_out.append('{spaces}'
                      'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
                      .format(**groups))
+    groups['format'] = expr_format(groups['assignexpr'])[0]
     lines_out.append('{spaces}'
-                     'print(\'    {assignvar}{assign}\', {assignexpr})'
+                     'print(\'    {assignvar}{assign}\' + {format})'
+                     .format(**groups))
+    lines_out.append('{spaces}'
+                     'print(\'    {assignvar}{assign}\' + repr({assignexpr}))'
                      .format(**groups))
 
 def preproc_comment(groups, line, lines_out, logic_funcs):
@@ -102,6 +120,30 @@ def preproc_callfunc(groups, line, lines_out, logic_funcs):
                      .format(**groups))
     lines_out.append(line)
 
+def preproc_from(groups, line, lines_out, logic_funcs):
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} importing {frommodule}\')'
+                     .format(**groups))
+    lines_out.append(line)
+
+
+VARIABLE=r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))|(?P<novariable>.))'
+RE_VARIABLE=re.compile(VARIABLE)
+
+def expr_format(expr):
+    format = ''
+    vars = []
+    for token in RE_VARIABLE.finditer(expr):
+        var = token.group('variable')
+        if var:
+            format += '{{{}}}'.format(var)
+            if var not in vars:
+                vars += [var]
+        else:
+            format += token.group('novariable')
+    args = ', '.join([var + '=' + var for var in vars])
+    format = '{!r}.format({})'.format(format, args)
+    return (format, vars)
 
 if __name__ == "__main__":
     if len (sys.argv) > 1:

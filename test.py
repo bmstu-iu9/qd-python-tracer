@@ -1,3 +1,5 @@
+from math import *
+
 def gcd(x, y):
     if x == 0:
         return y
@@ -18,8 +20,14 @@ def sign(z):
     else:
         return 0
 
+def hypot(catet1, catet2):
+    hyp = sqrt(catet1*catet1 + catet2*catet2)
+    return hyp
+
 gcd(20, 35)
 
 sign(-10)
 sign(0)
 sign(+100)
+
+hypot(5, 12)
