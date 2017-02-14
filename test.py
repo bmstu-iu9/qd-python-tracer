@@ -24,6 +24,11 @@ def hypot(catet1, catet2):
     hyp = sqrt(catet1*catet1 + catet2*catet2)
     return hyp
 
+foo = 'FOO'
+bar = "BAR"
+foobar = foo + bar
+#bas = '\"\'\n'
+
 gcd(20, 35)
 
 sign(-10)

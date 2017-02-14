@@ -77,9 +77,6 @@ def preproc_logic(groups, line, lines_out, logic_funcs):
     logic_funcs.append(logic_func)
     lines_out.append('{spaces}{logickw} trace_logic_func_{num}({args}):'
                      .format(**groups))
-    #lines_out.append(line)
-    #lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
-    #                 .format(**groups))
 
 def preproc_else(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
@@ -89,7 +86,8 @@ def preproc_assign(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
     # TODO: индекс
     lines_out.append('{spaces}'
-                     'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
+                     'print(\'{num:3} {assignvar}{assign}{{res}}\''
+                     '.format(res = {assignexpr!r}))'
                      .format(**groups))
     groups['format'] = expr_format(groups['assignexpr'])[0]
     lines_out.append('{spaces}'
@@ -127,7 +125,9 @@ def preproc_from(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
 
 
-VARIABLE=r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))|(?P<novariable>.))'
+VARIABLE=(r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))'
+          r'|(?P<novariable>[^\'"]'
+          r'|(?P<quote>[\'"])([^\'"])*(?P=quote)))')
 RE_VARIABLE=re.compile(VARIABLE)
 
 def expr_format(expr):
@@ -136,7 +136,7 @@ def expr_format(expr):
     for token in RE_VARIABLE.finditer(expr):
         var = token.group('variable')
         if var:
-            format += '{{{}}}'.format(var)
+            format += '{{{}!r}}'.format(var)
             if var not in vars:
                 vars += [var]
         else:
