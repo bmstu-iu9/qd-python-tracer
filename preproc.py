@@ -16,51 +16,45 @@ CODELINE = (r'^(?P<spaces>\s*)'
             r'|((?P<calledfunc>\w+)(?P<calledfuncparams>\(.*\)))'
             r')$')
 
-def preproc_logic(groups, line, fout):
-    print(line, file = fout)
-    traced_line = \
-            '{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'.format(**groups)
-    print(traced_line, file = fout)
+def preproc_logic(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
+                     .format(**groups))
 
-def preproc_else(groups, line, fout):
-    print(line, file = fout)
-    print('{spaces}    print(\'{num:3} else:\')'.format(**groups), file = fout)
+def preproc_else(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    print(\'{num:3} else:\')'.format(**groups))
 
-def preproc_assign(groups, line, fout):
-    print(line, file = fout)
+def preproc_assign(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
     # TODO: индекс
-    traced_line = ('{spaces}'
-                   'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
-                   .format(**groups))
-    print(traced_line, file = fout)
-    traced_line = ('{spaces}'
-                   'print(\'    {assignvar}{assign}\', {assignexpr})'
-                   .format(**groups))
-    print(traced_line, file = fout)
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
+                     .format(**groups))
+    lines_out.append('{spaces}'
+                     'print(\'    {assignvar}{assign}\', {assignexpr})'
+                     .format(**groups))
 
-def preproc_comment(groups, line, fout):
-    print(line, file = fout)
+def preproc_comment(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
 
-def preproc_defkw(groups, line, fout):
-    traced_line = ('{spaces}    '
-                   'print(\'{num:3} in function {funcname}{params}\')'
-                   .format(**groups))
-    print(line, file = fout)
-    print(traced_line, file = fout)
+def preproc_defkw(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    '
+                     'print(\'{num:3} in function {funcname}{params}\')'
+                     .format(**groups))
 
-def preproc_return(groups, line, fout):
-    traced_line= ('{spaces}'
-                  'print(\'{num:3} return\', {returnexpr})'
-                  .format(**groups))
-    print(traced_line, file = fout)
-    print(line, file = fout)
+def preproc_return(groups, line, lines_out, logic_funcs):
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} return\', {returnexpr})'
+                     .format(**groups))
+    lines_out.append(line)
 
-def preproc_callfunc(groups, line, fout):
-    traced_line = ('{spaces}'
-                   'print(\'{num:3} call {calledfunc}{calledfuncparams}\')'
-                   .format(**groups))
-    print(traced_line, file = fout)
-    print(line, file = fout)
+def preproc_callfunc(groups, line, lines_out, logic_funcs):
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} call {calledfunc}{calledfuncparams}\')'
+                     .format(**groups))
+    lines_out.append(line)
 
 def preproc_file(input_name, output_name, format_name):
     with open(input_name) as fin, \
@@ -77,6 +71,9 @@ def preproc_file(input_name, output_name, format_name):
             ('calledfunc', preproc_callfunc, 'Call func:'),
         ]
         re_line = re.compile(CODELINE)
+        lines_out = []
+        logic_funcs = []
+
         for line in fin:
             line = line.rstrip()
             print("{0:3} {1}".format(num, line), file=ffmt)
@@ -88,17 +85,20 @@ def preproc_file(input_name, output_name, format_name):
                     groupdict['num'] = num
                     print('{num:3} {message:17} |{line}'
                           .format(num = num, message = message, line = line))
-                    preproc(groupdict, line, fout)
+                    preproc(groupdict, line, lines_out, logic_funcs)
                     break;
             else:
                 if line == '' or parsed.group('spaces'):
                     print('{num:3} Empty line:'.format(num = num))
-                    print(line, file = fout)
+                    lines_out.append(line)
                 else:
                     print('{num:3} Bad line:         |{line}'
                           .format(num = num, line = line))
                     return False
             num += 1
+
+        for line in lines_out:
+            print(line, file = fout)
     return True
 
 if __name__ == "__main__":
