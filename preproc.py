@@ -83,34 +83,40 @@ def preproc_else(groups, line, lines_out, logic_funcs):
     lines_out.append('{spaces}    print(\'{num:3} else:\')'.format(**groups))
 
 def preproc_assign(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
     # TODO: индекс
     lines_out.append('{spaces}'
-                     'print(\'{num:3} {assignvar}{assign}{{res}}\''
-                     '.format(res = {assignexpr!r}))'
+                     'print(\'{num:3} {assignvar}{assign}\' {assignexpr!r})'
                      .format(**groups))
     groups['format'] = expr_format(groups['assignexpr'])[0]
     lines_out.append('{spaces}'
                      'print(\'    {assignvar}{assign}\' + {format})'
                      .format(**groups))
+    lines_out.append('{spaces}trace_res = {assignexpr}'.format(**groups))
     lines_out.append('{spaces}'
-                     'print(\'    {assignvar}{assign}\' + repr({assignexpr}))'
+                     'print(\'    {assignvar}{assign}\' + repr(trace_res))'
                      .format(**groups))
+    lines_out.append('{spaces}{assignvar}{assign}trace_res'.format(**groups))
 
 def preproc_comment(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
 
 def preproc_defkw(groups, line, lines_out, logic_funcs):
+    (format, vars) = expr_format(groups['params'])
+    groups['formal_params'] = ', '.join(['{}={{}}'.format(arg) for arg in vars])
+    groups['actual_params'] = ', '.join(vars)
     lines_out.append(line)
     lines_out.append('{spaces}    '
-                     'print(\'{num:3} in function {funcname}{params}\')'
+                     'print(\'{num:3} in function {funcname}({formal_params})\''
+                     '.format({actual_params}))'
                      .format(**groups))
 
 def preproc_return(groups, line, lines_out, logic_funcs):
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} return\', {returnexpr})'
+    lines_out.append('{spaces}trace_res = {returnexpr}'.format(**groups))
+    lines_out.append('{spaces}print(\'{num:3} return\' {returnexpr!r})'
                      .format(**groups))
-    lines_out.append(line)
+    lines_out.append('{spaces}print(\'    return\', trace_res)'
+                     .format(**groups))
+    lines_out.append('{spaces}return trace_res'.format(**groups))
 
 def preproc_callfunc(groups, line, lines_out, logic_funcs):
     lines_out.append('{spaces}'
