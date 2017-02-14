@@ -18,10 +18,8 @@ CODELINE = (r'^(?P<spaces>\s*)'
             r')$')
 RE_CODELINE = re.compile(CODELINE)
 
-def preproc_file(input_name, output_name, format_name):
-    with open(input_name) as fin, \
-         open(output_name, 'w') as fout, \
-         open(format_name, 'w') as ffmt:
+def preproc_file(input_name):
+    with open(input_name) as fin:
         num = 1
         FORMATTERS = [
             ('logickw', preproc_logic, 'Logic operator:'),
@@ -38,8 +36,6 @@ def preproc_file(input_name, output_name, format_name):
 
         for line in fin:
             line = line.rstrip()
-            print("{0:3} {1}".format(num, line), file=ffmt)
-
             parsed = RE_CODELINE.match(line)
             for group, preproc, message in FORMATTERS:
                 if parsed.group(group):
@@ -59,8 +55,7 @@ def preproc_file(input_name, output_name, format_name):
                     return False
             num += 1
 
-        for line in logic_funcs + lines_out:
-            print(line, file = fout)
+        return logic_funcs + lines_out
     return True
 
 
@@ -153,8 +148,9 @@ def expr_format(expr):
 
 if __name__ == "__main__":
     if len (sys.argv) > 1:
-        preproc_file(sys.argv[1],
-                     '~' + sys.argv[1] + '.out.py',
-                     '~' + sys.argv[1] + '.lst')
+        lines = preproc_file(sys.argv[1])
+        with open('~' + sys.argv[1] + '.out.py', 'w') as fout:
+            for line in lines:
+                print(line, file = fout)
     else:
         print('Bad command line')
