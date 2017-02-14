@@ -27,7 +27,7 @@ def hypot(catet1, catet2):
 foo = 'FOO'
 bar = "BAR"
 foobar = foo + bar
-#bas = '\"\'\n'
+bas = '\"\'\n'
 
 gcd(20, 35)
 

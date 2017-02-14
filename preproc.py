@@ -127,7 +127,7 @@ def preproc_from(groups, line, lines_out, logic_funcs):
 
 VARIABLE=(r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))'
           r'|(?P<novariable>[^\'"]'
-          r'|(?P<quote>[\'"])([^\'"])*(?P=quote)))')
+          r'|(?P<quote>[\'"])([^\'"\\]|\\.)*(?P=quote)))')
 RE_VARIABLE=re.compile(VARIABLE)
 
 def expr_format(expr):
