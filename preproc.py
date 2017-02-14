@@ -16,46 +16,6 @@ CODELINE = (r'^(?P<spaces>\s*)'
             r'|((?P<calledfunc>\w+)(?P<calledfuncparams>\(.*\)))'
             r')$')
 
-def preproc_logic(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-    lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
-                     .format(**groups))
-
-def preproc_else(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-    lines_out.append('{spaces}    print(\'{num:3} else:\')'.format(**groups))
-
-def preproc_assign(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-    # TODO: индекс
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
-                     .format(**groups))
-    lines_out.append('{spaces}'
-                     'print(\'    {assignvar}{assign}\', {assignexpr})'
-                     .format(**groups))
-
-def preproc_comment(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-
-def preproc_defkw(groups, line, lines_out, logic_funcs):
-    lines_out.append(line)
-    lines_out.append('{spaces}    '
-                     'print(\'{num:3} in function {funcname}{params}\')'
-                     .format(**groups))
-
-def preproc_return(groups, line, lines_out, logic_funcs):
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} return\', {returnexpr})'
-                     .format(**groups))
-    lines_out.append(line)
-
-def preproc_callfunc(groups, line, lines_out, logic_funcs):
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} call {calledfunc}{calledfuncparams}\')'
-                     .format(**groups))
-    lines_out.append(line)
-
 def preproc_file(input_name, output_name, format_name):
     with open(input_name) as fin, \
          open(output_name, 'w') as fout, \
@@ -100,6 +60,48 @@ def preproc_file(input_name, output_name, format_name):
         for line in lines_out:
             print(line, file = fout)
     return True
+
+
+def preproc_logic(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    print(\'{num:3} {logickw}{logicexpr}\')'
+                     .format(**groups))
+
+def preproc_else(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    print(\'{num:3} else:\')'.format(**groups))
+
+def preproc_assign(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    # TODO: индекс
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} {assignvar}{assign}{assignexpr}\')'
+                     .format(**groups))
+    lines_out.append('{spaces}'
+                     'print(\'    {assignvar}{assign}\', {assignexpr})'
+                     .format(**groups))
+
+def preproc_comment(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+
+def preproc_defkw(groups, line, lines_out, logic_funcs):
+    lines_out.append(line)
+    lines_out.append('{spaces}    '
+                     'print(\'{num:3} in function {funcname}{params}\')'
+                     .format(**groups))
+
+def preproc_return(groups, line, lines_out, logic_funcs):
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} return\', {returnexpr})'
+                     .format(**groups))
+    lines_out.append(line)
+
+def preproc_callfunc(groups, line, lines_out, logic_funcs):
+    lines_out.append('{spaces}'
+                     'print(\'{num:3} call {calledfunc}{calledfuncparams}\')'
+                     .format(**groups))
+    lines_out.append(line)
+
 
 if __name__ == "__main__":
     if len (sys.argv) > 1:
