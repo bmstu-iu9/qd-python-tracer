@@ -71,7 +71,7 @@ def preproc_logic(groups, line, lines_out, logic_funcs):
     logic_func = ('def trace_logic_func_{num}({args}):\n'
                   '    trace_res = {logicexpr}\n'
                   '    print(\'{num:3} {logickw}\' + {fmt_expr} + '
-                  '\': --- {{!r}}\'.format(trace_res))\n'
+                  '\': --- \' + repr(trace_res))\n'
                   '    return trace_res\n'
                   .format(**groups))
     logic_funcs.append(logic_func)
