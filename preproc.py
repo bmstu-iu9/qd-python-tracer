@@ -63,13 +63,12 @@ def preproc_logic(groups, line, lines_out, logic_funcs):
     (fmt_expr, vars) = expr_format(groups['logicexpr'])
     groups['fmt_expr'] = fmt_expr
     groups['args'] = ', '.join(vars)
-    logic_func = ('def trace_logic_func_{num}({args}):\n'
-                  '    trace_res = {logicexpr}\n'
-                  '    print(\'{num:3} {logickw}\' + {fmt_expr} + '
-                  '\': --- \' + repr(trace_res))\n'
-                  '    return trace_res\n'
-                  .format(**groups))
-    logic_funcs.append(logic_func)
+    logic_funcs.append('def trace_logic_func_{num}({args}):'.format(**groups))
+    logic_funcs.append('    trace_res = {logicexpr}'.format(**groups))
+    logic_funcs.append('    print(\'{num:3} {logickw}\' + {fmt_expr} + '
+                       '\': --- \' + repr(trace_res))'.format(**groups))
+    logic_funcs.append('    return trace_res'.format(**groups))
+    logic_funcs.append('')
     lines_out.append('{spaces}{logickw} trace_logic_func_{num}({args}):'
                      .format(**groups))
 
