@@ -22,14 +22,14 @@ def preproc_file(input_name):
     with open(input_name) as fin:
         num = 1
         FORMATTERS = [
-            ('logickw', preproc_logic, 'Logic operator:'),
-            ('elsekw', preproc_else, 'Else keyword:'),
-            ('assign', preproc_assign, 'Assign:'),
-            ('comment', preproc_comment, 'Comment:'),
-            ('defkw', preproc_defkw, 'Function def:'),
-            ('returnkw', preproc_return, 'Return:'),
-            ('calledfunc', preproc_callfunc, 'Call func:'),
-            ('from', preproc_from, 'From:'),
+            ('logickw', preproc_logic),
+            ('elsekw', preproc_else),
+            ('assign', preproc_assign),
+            ('comment', preproc_comment),
+            ('defkw', preproc_defkw),
+            ('returnkw', preproc_return),
+            ('calledfunc', preproc_callfunc),
+            ('from', preproc_from),
         ]
         lines_out = []
         logic_funcs = []
@@ -37,26 +37,26 @@ def preproc_file(input_name):
         for line in fin:
             line = line.rstrip()
             parsed = RE_CODELINE.match(line)
-            for group, preproc, message in FORMATTERS:
-                if parsed.group(group):
+            if not parsed:
+                print('{input_name}:{num}:Bad line: {line}'.format(**locals()))
+                return []
+
+            for group, preproc in FORMATTERS:
+                if parsed and parsed.group(group):
                     groupdict = parsed.groupdict()
                     groupdict['num'] = num
-                    print('{num:3} {message:17} |{line}'
-                          .format(num = num, message = message, line = line))
                     preproc(groupdict, line, lines_out, logic_funcs)
                     break;
             else:
                 if line == '' or parsed.group('spaces'):
-                    print('{num:3} Empty line:'.format(num = num))
                     lines_out.append(line)
                 else:
-                    print('{num:3} Bad line:         |{line}'
-                          .format(num = num, line = line))
+                    print('{input_name}:{num}:Bad line: {line}'
+                          .format(**locals()))
                     return False
             num += 1
 
         return logic_funcs + lines_out
-    return True
 
 
 def preproc_logic(groups, line, lines_out, logic_funcs):
