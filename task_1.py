@@ -7,25 +7,26 @@ import os
 import preproc
 import sys
 
-def exec_preproc(input_name):
-    lines = preproc.preproc_file(input_name)
-    lines = '\n'.join(lines)
+def exec_text(text, context):
     with open('~output.tmp', 'w') as fout, \
          contextlib.redirect_stdout(fout):
-        if lines:
-            context = {}
-            exec(lines, context)
-            for k in context:
-                print(k)
-            (x, y) = (3684468, 17354368)
-            gcd = context['gcd'](x, y)
-            print('gcd({x}, {y}) = {gcd}'.format(**locals()))
-        else:
-            return []
+        exec(text, context)
     with open('~output.tmp') as fin:
         stdout = [line.rstrip() for line in fin]
     os.remove('~output.tmp')
     return stdout
+
+def exec_function_from(code, funcname, args):
+    context = {'trace_args' : args}
+    code += '\ntrace_res = ' + funcname + '(*trace_args)'
+    stdout = exec_text(code, context)
+    return (context['trace_res'], stdout)
+
+def exec_preproc(input_name):
+    lines = preproc.preproc_file(input_name)
+    lines = '\n'.join(lines)
+    (result, stdout) = exec_function_from(lines, 'gcd', [3684468, 17354368])
+    return [repr(result)] + stdout
 
 if __name__=='__main__':
     if len (sys.argv) > 1:
