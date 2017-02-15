@@ -3,6 +3,7 @@
 # vim: shiftwidth=4
 
 import contextlib
+import math
 import os
 import preproc
 import random
@@ -12,6 +13,7 @@ import sys
 def gen_variant():
     gen_task_1_gcd()
     gen_task_1_hex()
+    gen_task_1_square_equal()
 
 def gen_task_1_gcd():
     def genargs():
@@ -23,19 +25,47 @@ def gen_task_1_gcd():
         return (x, y)
 
     gen_task('task_1_gcd.py', 'gcd', genargs,
-             lambda result, stdout: result > 3 and 40 <= len(stdout) <= 50)
+             lambda args, result, stdout: result > 3 and 40 <= len(stdout) <= 50)
 
 def gen_task_1_hex():
     gen_task('task_1_hex.py', 'hex',
              lambda: [random.randint(20, 1000)],
-             lambda result, stdout: re.match('[A-F]', result))
+             lambda args, result, stdout: re.match('[A-F]', result))
+
+def gen_task_1_square_equal():
+    sqr = lambda x: x*x
+
+    # x1 = p/r, x2 = q/r
+    # r2x2 - (p+q)·rx + pq = 0
+    # D = r2(p-q)2
+    def genargs():
+        valid_args = False
+        while not valid_args:
+            p = random.randint(-99, 99)
+            q = random.randint(-99, 99)
+            r = random.randint(1, 99)
+
+            D = sqr(r*(p-q))
+            a = r*r
+            b = -(p+q)*r
+            c = p*q
+
+            valid_args = (0 <= D <= 9999 and (b != 0 or c != 0)
+                          and 100 * p % r == 0 and 100 * q % r == 0
+                          and 0 <= b*b <= 9999 and math.fabs(4*a*c) <= 9999
+                          and 1 <= c <= 99)
+        return (a, b, c)
+
+    gen_task('task_1_square_equal.py', 'square_equal', genargs,
+             lambda args, result, stdout: True)
+
 
 def gen_task(source, funcname, genargsfunc, validfunc):
     valid_task = False
     while not valid_task:
         args = genargsfunc()
         (result, stdout) = exec_function_from(source, funcname, args)
-        valid_task = validfunc(result, stdout)
+        valid_task = validfunc(args, result, stdout)
 
     print('=' * 80)
     args = ', '.join(repr(arg) for arg in args)
