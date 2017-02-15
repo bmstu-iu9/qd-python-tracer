@@ -165,6 +165,20 @@ def gen_square_equal_linear_invalid():
             lambda: (0, 0, random.randint(-99, 99)),
             lambda args, result, stdout: True)
 
+def gen_findmax_normal():
+    def genargs():
+        items_len = random.randint(1, 20)
+        items = []
+        while items_len > 0:
+            items += [random.randint(-99, 99)]
+            items_len -= 1
+        return (tuple(items),)
+
+    def valid(args, result, stdout):
+        return 30 <= len(stdout) <= 40
+
+    return ('task_1_findmax.py', 'findmax', genargs, valid)
+
 def gen_task(source, funcname, genargsfunc, validfunc, num, varset):
     valid_task = False
     while not valid_task:
