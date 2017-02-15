@@ -10,14 +10,16 @@ import random
 import re
 import sys
 
-def gen_variants():
+def gen_variants(varprefix = '1-1'):
     varset = set()
-    for i in range(1, 6):
-        print('#' * 80)
-        print(i)
-        gen_variant(varset)
+    with open('task_1_tasks.txt', 'w') as ftasks, \
+         open('task_1_answers.txt', 'w') as fanswers:
+        for i in range(1, 50):
+            print(i, end='\r')
+            var = '{varprefix}-{i}'.format(**locals())
+            gen_variant(var, varset, ftasks, fanswers)
 
-def gen_variant(varset):
+def gen_variant(var, varset, ftasks, fanswers):
     tasklist = [gen_gcd_no_zero,
                 gen_gcd_zero_x,
                 gen_gcd_zero_y,
@@ -27,16 +29,29 @@ def gen_variant(varset):
                 gen_square_equal_d_neg,
                 gen_square_equal_linear_valid,
                 gen_square_equal_linear_invalid]
+
+    print('Группа: Л4-2__, фамилия, имя ' + '_' * 50, file = ftasks)
+    print('Вариант: ' + var, file = ftasks)
+    print(file = ftasks)
+    print('Выполните трассировку следующих вызовов функций:', file = ftasks)
+
+    print('Вариант: ' + var, file = fanswers)
     for num, task in enumerate(tasklist):
         (filename, funcname, genargsfunc, validfunc) = task()
         (args, result, stdout) = gen_task(filename, funcname,
                                           genargsfunc, validfunc,
                                           num, varset)
 
-        print('=' * 80)
+        item_no = num + 1
         args = ', '.join(repr(arg) for arg in args)
-        print('{funcname}({args}) = {result}'.format(**locals()))
-        print('\n'.join(stdout))
+        print('{item_no}. {funcname}({args})'.format(**locals()), file = ftasks)
+
+        print('{item_no}. {funcname}({args}) = {result!r}'.format(**locals()),
+              file = fanswers)
+        print('\n'.join(stdout), file = fanswers)
+
+    print('PAGEBREAK', file = ftasks)
+    print('PAGEBREAK', file = fanswers)
 
 def gen_gcd_no_zero():
     def genargs():
@@ -206,4 +221,7 @@ def unique_lines(lines):
     return res
 
 if __name__=='__main__':
-    gen_variants()
+    if len(sys.argv) > 2:
+        gen_variants(os.argv[1])
+    else:
+        gen_variants()
