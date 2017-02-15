@@ -24,7 +24,6 @@ def exec_function_from(code, funcname, args):
 
 def exec_preproc(input_name):
     lines = preproc.preproc_file(input_name)
-    lines = '\n'.join(lines)
     (result, stdout) = exec_function_from(lines, 'gcd', [3684468, 17354368])
     return [repr(result)] + stdout
 

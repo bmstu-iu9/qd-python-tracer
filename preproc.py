@@ -56,7 +56,7 @@ def preproc_file(input_name):
                     return False
             num += 1
 
-        return logic_funcs + lines_out
+        return '\n'.join(logic_funcs + lines_out)
 
 
 def preproc_logic(groups, line, lines_out, logic_funcs):
@@ -149,7 +149,6 @@ if __name__ == "__main__":
     if len (sys.argv) > 1:
         lines = preproc_file(sys.argv[1])
         with open('~' + sys.argv[1] + '.out.py', 'w') as fout:
-            for line in lines:
-                print(line, file = fout)
+            print(lines, file = fout)
     else:
         print('Bad command line')
