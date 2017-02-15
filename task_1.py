@@ -11,11 +11,17 @@ import re
 import sys
 
 def gen_variant():
-    gen_task_1_gcd()
-    gen_task_1_hex()
-    gen_task_1_square_equal()
+    gen_gcd_no_zero()
+    gen_gcd_zero_x()
+    gen_gcd_zero_y()
+    gen_hex()
+    gen_square_equal_d_pos()
+    gen_square_equal_d_zero()
+    gen_square_equal_d_neg()
+    gen_square_equal_linear_valid()
+    gen_square_equal_linear_invalid()
 
-def gen_task_1_gcd():
+def gen_gcd_no_zero():
     def genargs():
         valid_args = False
         while not valid_args:
@@ -27,12 +33,22 @@ def gen_task_1_gcd():
     gen_task('task_1_gcd.py', 'gcd', genargs,
              lambda args, result, stdout: result > 3 and 40 <= len(stdout) <= 50)
 
-def gen_task_1_hex():
+def gen_gcd_zero_x():
+    gen_task('task_1_gcd.py', 'gcd',
+             lambda: [0, random.randint(2, 100)],
+             lambda args, result, stdout: True)
+
+def gen_gcd_zero_y():
+    gen_task('task_1_gcd.py', 'gcd',
+             lambda: [random.randint(2, 100), 0],
+             lambda args, result, stdout: True)
+
+def gen_hex():
     gen_task('task_1_hex.py', 'hex',
              lambda: [random.randint(20, 1000)],
              lambda args, result, stdout: re.match('[A-F]', result))
 
-def gen_task_1_square_equal():
+def gen_square_equal_d_pos():
     sqr = lambda x: x*x
 
     # x1 = p/r, x2 = q/r
@@ -44,21 +60,78 @@ def gen_task_1_square_equal():
             p = random.randint(-99, 99)
             q = random.randint(-99, 99)
             r = random.randint(1, 99)
+            sgn = random.randint(-1, +1)
 
             D = sqr(r*(p-q))
-            a = r*r
-            b = -(p+q)*r
-            c = p*q
+            a = r*r*sgn
+            b = -(p+q)*r*sgn
+            c = p*q*sgn
 
-            valid_args = (0 <= D <= 9999 and (b != 0 or c != 0)
+            valid_args = (a != 0 and 0 <= D <= 9999 and (b != 0 or c != 0)
                           and 100 * p % r == 0 and 100 * q % r == 0
-                          and 0 <= b*b <= 9999 and math.fabs(4*a*c) <= 9999
+                          and -99 <= b <= 99 and math.fabs(4*a*c) <= 9999
                           and 1 <= c <= 99)
         return (a, b, c)
 
     gen_task('task_1_square_equal.py', 'square_equal', genargs,
              lambda args, result, stdout: True)
 
+def gen_square_equal_d_zero():
+    # a·x2 + b·x + c = 0
+    # (p·x — q) = 0
+    # a = p2, b = -2pq, c = q2
+    def genargs():
+        valid_args = False
+        while not valid_args:
+            p = random.randint(-99, 99)
+            q = random.randint(1, 99)
+            sgn = random.randint(-1, +1)
+
+            a = p*p*sgn
+            b = -2*p*q*sgn
+            c = q*q*sgn
+
+            valid_args = (a != 0 and -99 <= a <= 99
+                          and -99 <= b <= 99 and -99 <= c <= 99)
+        return (a, b, c)
+
+    gen_task('task_1_square_equal.py', 'square_equal', genargs,
+             lambda args, result, stdout: True)
+
+def gen_square_equal_d_neg():
+    def genargs():
+        valid_args = False
+        while not valid_args:
+            a = random.randint(-99, 99)
+            b = random.randint(-99, 99)
+            c = random.randint(-99, 99)
+
+            D = b*b - 4*a*c
+            valid_args = (D < 0 and a != 0 and -99 <= a <= 99
+                          and -99 <= b <= 99 and -99 <= c <= 99
+                          and 0 <= b*b <= 999 and math.fabs(4*a*c) <= 999)
+        return (a, b, c)
+
+    gen_task('task_1_square_equal.py', 'square_equal', genargs,
+             lambda args, result, stdout: True)
+
+def gen_square_equal_linear_valid():
+    def genargs():
+        valid_args = False
+        while not valid_args:
+            b = random.randint(-99, 99)
+            c = random.randint(-99, 99)
+
+            valid_args = 100 * c % b == 0 and c != 0
+        return (0, b, c)
+
+    gen_task('task_1_square_equal.py', 'square_equal', genargs,
+             lambda args, result, stdout: True)
+
+def gen_square_equal_linear_invalid():
+    gen_task('task_1_square_equal.py', 'square_equal',
+             lambda: (0, 0, random.randint(-99, 99)),
+             lambda args, result, stdout: True)
 
 def gen_task(source, funcname, genargsfunc, validfunc):
     valid_task = False
