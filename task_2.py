@@ -19,7 +19,7 @@ def gen_variants(varprefix = '2-1'):
                 gen_findmax_normal(),
                 gen_unique(),
                 gen_join()]
-    taskgen.gen_variants(tasklist, varprefix, 5,
+    taskgen.gen_variants(tasklist, varprefix, 50,
                         'task_2_tasks.txt', 'task_2_answers.txt')
 
 def gen_gcd(no_zero):
