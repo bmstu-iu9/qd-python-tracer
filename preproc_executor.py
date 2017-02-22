@@ -45,7 +45,7 @@ def exec_text(text, context):
 def unique_lines(lines):
     res = []
     for line in lines:
-        if not res or res[-1] != line:
+        if not res or '    ' + res[-1][4:] != line:
             res += [line]
     return res
 

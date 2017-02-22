@@ -78,12 +78,9 @@ def preproc_else(groups, line, lines_out, logic_funcs):
 
 def preproc_assign(groups, line, lines_out, logic_funcs):
     # TODO: индекс
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} {assignvar}{assign}\' {assignexpr!r})'
-                     .format(**groups))
     groups['format'] = expr_format(groups['assignexpr'])[0]
     lines_out.append('{spaces}'
-                     'print(\'    {assignvar}{assign}\' + {format})'
+                     'print(\'{num:3} {assignvar}{assign}\' + {format})'
                      .format(**groups))
     lines_out.append('{spaces}trace_res = {assignexpr}'.format(**groups))
     lines_out.append('{spaces}'

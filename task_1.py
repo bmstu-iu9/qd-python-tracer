@@ -48,6 +48,7 @@ def gen_variant(var, varset, ftasks, fanswers):
         print('{item_no}. {funcname}({args}) = {result!r}'.format(**locals()),
               file = fanswers)
         print('\n'.join(stdout), file = fanswers)
+        print(file = fanswers)
 
     print('PAGEBREAK', file = ftasks)
     print('PAGEBREAK', file = fanswers)
@@ -62,7 +63,7 @@ def gen_gcd_no_zero():
         return (x, y)
 
     return ('task_1_gcd.py', 'gcd', genargs,
-            lambda args, result, stdout: result > 3 and 40 <= len(stdout) <= 50)
+            lambda args, result, stdout: result > 3 and 30 <= len(stdout) <= 40)
 
 def gen_gcd_zero_x():
     return ('task_1_gcd.py', 'gcd',
