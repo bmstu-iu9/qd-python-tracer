@@ -48,4 +48,3 @@ def unique_lines(lines):
         if not res or '    ' + res[-1][4:] != line:
             res += [line]
     return res
-
