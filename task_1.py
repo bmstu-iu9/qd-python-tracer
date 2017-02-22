@@ -19,14 +19,8 @@ def gen_variants(varprefix = '1-1'):
                 gen_square_equal_d_neg(),
                 gen_square_equal_linear_valid(),
                 gen_square_equal_linear_invalid()]
-
-    varset = set()
-    with open('task_1_tasks.txt', 'w') as ftasks, \
-         open('task_1_answers.txt', 'w') as fanswers:
-        for i in range(1, 5):
-            print(i, end='\r')
-            var = '{varprefix}-{i}'.format(**locals())
-            taskgen.gen_variant(tasklist, var, varset, ftasks, fanswers)
+    taskgen.gen_variants(tasklist, varprefix, 50,
+                        'task_1_tasks.txt', 'task_1_answers.txt')
 
 def gen_gcd_no_zero():
     def genargs():

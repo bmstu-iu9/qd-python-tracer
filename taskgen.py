@@ -4,6 +4,15 @@
 
 import preproc_executor as pex
 
+def gen_variants(tasklist, varprefix, count, tasks_name, answers_name):
+    varset = set()
+    with open(tasks_name, 'w') as ftasks, \
+         open(answers_name, 'w') as fanswers:
+        for i in range(1, count + 1):
+            print(i, end='\r')
+            var = '{varprefix}-{i}'.format(**locals())
+            gen_variant(tasklist, var, varset, ftasks, fanswers)
+
 def gen_variant(tasklist, var, varset, ftasks, fanswers):
     print('Группа: Л4-2__, фамилия, имя ' + '_' * 50, file = ftasks)
     print('Вариант: ' + var, file = ftasks)

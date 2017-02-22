@@ -17,15 +17,10 @@ def gen_variants(varprefix = '2-1'):
                 gen_square_equal(True),
                 gen_square_equal(False),
                 gen_findmax_normal(),
-                gen_unique()]
-
-    varset = set()
-    with open('task_2_tasks.txt', 'w') as ftasks, \
-         open('task_2_answers.txt', 'w') as fanswers:
-        for i in range(1, 5):
-            print(i, end='\r')
-            var = '{varprefix}-{i}'.format(**locals())
-            taskgen.gen_variant(tasklist, var, varset, ftasks, fanswers)
+                gen_unique(),
+                gen_join()]
+    taskgen.gen_variants(tasklist, varprefix, 5,
+                        'task_2_tasks.txt', 'task_2_answers.txt')
 
 def gen_gcd(no_zero):
     def genargs():
@@ -33,10 +28,10 @@ def gen_gcd(no_zero):
         y = random.randint(-100, 100)
         return (x, y)
 
-    if no_zero
+    if no_zero:
         return ('task_2_gcd.py', 'gcd', genargs,
                 lambda args, result, stdout: (result >= 3
-                                              and 20 <= len(stdout) <= 30)
+                                              and 20 <= len(stdout) <= 30))
     else:
         return ('task_2_gcd.py', 'gcd', genargs,
                 lambda args, result, stdout: 0 in args)
@@ -76,7 +71,7 @@ def int_sqrt(x):
 
 def gen_findmax_normal():
     def genargs():
-        items_len = random.randint(1, 20)
+        items_len = random.randint(1, 10)
         items = []
         while items_len > 0:
             items += [random.randint(-99, 99)]
@@ -90,7 +85,7 @@ def gen_findmax_normal():
 
 def gen_unique():
     def genargs():
-        items_len = random.randint(0, 20)
+        items_len = random.randint(0, 10)
         randint = lambda: random.randint(-99, 99)
         items = [randint()]
         while items_len > 0:
@@ -104,6 +99,21 @@ def gen_unique():
                 and 1.1 <= len(arg) / len(result) <= 1.5)
 
     return ('task_2_uniq.py', 'unique', genargs, valid)
+
+def gen_join():
+    def genargs():
+        sep = random.choice(',+:;')
+        items_len = random.randint(1, 10)
+        items = []
+        while items_len > 0:
+            items += [random.randint(0, 99)]
+            items_len -= 1
+        return (sep, (list, tuple(items)))
+
+    def valid(args, result, stdout):
+        return 15 <= len(stdout) <= 25
+
+    return ('task_2_join.py', 'join', genargs, valid)
 
 if __name__=='__main__':
     if len(sys.argv) > 2:
