@@ -103,9 +103,7 @@ def preproc_defkw(groups, line, lines_out, logic_funcs):
 
 def preproc_return(groups, line, lines_out, logic_funcs):
     lines_out.append('{spaces}trace_res = {returnexpr}'.format(**groups))
-    lines_out.append('{spaces}print(\'{num:3} return\' {returnexpr!r})'
-                     .format(**groups))
-    lines_out.append('{spaces}print(\'    return\', trace_res)'
+    lines_out.append('{spaces}print(\'{num:3} return\', repr(trace_res))'
                      .format(**groups))
     lines_out.append('{spaces}return trace_res'.format(**groups))
 
