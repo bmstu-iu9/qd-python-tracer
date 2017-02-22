@@ -12,7 +12,7 @@ def gen_variant(tasklist, var, varset, ftasks, fanswers):
 
     print('Вариант: ' + var, file = fanswers)
     for num, task in enumerate(tasklist):
-        (filename, funcname, genargsfunc, validfunc) = task()
+        (filename, funcname, genargsfunc, validfunc) = task
         (args, result, stdout) = gen_task(filename, funcname,
                                           genargsfunc, validfunc,
                                           num, varset)

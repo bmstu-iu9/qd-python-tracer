@@ -13,11 +13,11 @@ import task_1
 def gen_variants(varprefix = '2-1'):
     tasklist = [gen_gcd(True),
                 gen_gcd(False),
-                task_1.gen_hex,
+                task_1.gen_hex(),
                 gen_square_equal(True),
                 gen_square_equal(False),
-                gen_findmax_normal,
-                gen_unique]
+                gen_findmax_normal(),
+                gen_unique()]
 
     varset = set()
     with open('task_2_tasks.txt', 'w') as ftasks, \
@@ -33,16 +33,13 @@ def gen_gcd(no_zero):
         y = random.randint(-100, 100)
         return (x, y)
 
-    def gen_no_zero():
+    if no_zero
         return ('task_2_gcd.py', 'gcd', genargs,
                 lambda args, result, stdout: (result >= 3
                                               and 20 <= len(stdout) <= 30)
-
-    def gen_zero():
+    else:
         return ('task_2_gcd.py', 'gcd', genargs,
                 lambda args, result, stdout: 0 in args)
-
-    return gen_no_zero if no_zero else gen_zero
 
 def gen_square_equal(roots):
     def genargs():
@@ -69,7 +66,7 @@ def gen_square_equal(roots):
                 return (roots and 100 * (-c) % b == 0)
             else:
                 return not roots
-    return lambda: ('task_1_square_equal.py', 'square_equal', genargs, validargs)
+    return ('task_1_square_equal.py', 'square_equal', genargs, validargs)
 
 def int_sqrt(x):
     for i in range (1, 99):

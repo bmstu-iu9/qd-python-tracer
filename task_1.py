@@ -10,15 +10,15 @@ import sys
 import taskgen
 
 def gen_variants(varprefix = '1-1'):
-    tasklist = [gen_gcd_no_zero,
-                gen_gcd_zero_x,
-                gen_gcd_zero_y,
-                gen_hex,
-                gen_square_equal_d_pos,
-                gen_square_equal_d_zero,
-                gen_square_equal_d_neg,
-                gen_square_equal_linear_valid,
-                gen_square_equal_linear_invalid]
+    tasklist = [gen_gcd_no_zero(),
+                gen_gcd_zero_x(),
+                gen_gcd_zero_y(),
+                gen_hex(),
+                gen_square_equal_d_pos(),
+                gen_square_equal_d_zero(),
+                gen_square_equal_d_neg(),
+                gen_square_equal_linear_valid(),
+                gen_square_equal_linear_invalid()]
 
     varset = set()
     with open('task_1_tasks.txt', 'w') as ftasks, \
