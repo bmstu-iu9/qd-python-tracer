@@ -6,4 +6,5 @@ def findmax(items):
     while i < len(items):
         if m < items[i]:
             m = items[i]
+        i = i + 1
     return m

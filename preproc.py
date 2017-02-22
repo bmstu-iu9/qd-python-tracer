@@ -121,6 +121,7 @@ def preproc_from(groups, line, lines_out, logic_funcs):
 
 
 VARIABLE=(r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))'
+          r'|(?P<indexvar>[A-Za-z]\w*\b(?=[\x5B\x28]))'
           r'|(?P<novariable>[^\'"]'
           r'|(?P<quote>[\'"])([^\'"\\]|\\.)*(?P=quote)))')
 RE_VARIABLE=re.compile(VARIABLE)
@@ -128,17 +129,23 @@ RE_VARIABLE=re.compile(VARIABLE)
 def expr_format(expr):
     format = ''
     vars = []
+    ivars = []
     for token in RE_VARIABLE.finditer(expr):
         var = token.group('variable')
+        ivar = token.group('indexvar')
         if var:
             format += '{{{}!r}}'.format(var)
             if var not in vars:
                 vars += [var]
+        elif ivar:
+            format += ivar
+            if ivar not in ivars:
+                ivars += [ivar]
         else:
             format += token.group('novariable')
     args = ', '.join([var + '=' + var for var in vars])
     format = '{!r}.format({})'.format(format, args)
-    return (format, vars)
+    return (format, vars + ivars)
 
 if __name__ == "__main__":
     if len (sys.argv) > 1:

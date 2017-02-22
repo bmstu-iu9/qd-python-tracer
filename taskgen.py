@@ -34,7 +34,15 @@ def gen_task(source, funcname, genargsfunc, validfunc, num, varset):
     while not valid_task:
         args = genargsfunc()
         if (args, num) not in varset:
-            (result, stdout) = pex.exec_function_from(source, funcname, args)
+            real_args = []
+            for arg in args:
+                if type(arg) == tuple:
+                    real_args += [arg[0](arg[1])]
+                else:
+                    real_args += [arg]
+
+            (result, stdout) = \
+                pex.exec_function_from(source, funcname, real_args)
             valid_task = validfunc(args, result, stdout)
 
     varset.add((args, num))

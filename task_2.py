@@ -16,8 +16,7 @@ def gen_variants(varprefix = '2-1'):
                 task_1.gen_hex,
                 gen_square_equal(True),
                 gen_square_equal(False),
-                #gen_findmax_normal
-                ]
+                gen_findmax_normal]
 
     varset = set()
     with open('task_2_tasks.txt', 'w') as ftasks, \
@@ -83,12 +82,12 @@ def gen_findmax_normal():
         while items_len > 0:
             items += [random.randint(-99, 99)]
             items_len -= 1
-        return (tuple(items),)
+        return ((list, tuple(items)),)
 
     def valid(args, result, stdout):
-        return 30 <= len(stdout) <= 40
+        return 20 <= len(stdout) <= 30
 
-    return ('task_1_findmax.py', 'findmax', genargs, valid)
+    return ('task_2_findmax.py', 'findmax', genargs, valid)
 
 if __name__=='__main__':
     if len(sys.argv) > 2:
