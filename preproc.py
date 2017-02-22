@@ -77,16 +77,32 @@ def preproc_else(groups, line, lines_out, logic_funcs):
     lines_out.append('{spaces}    print(\'{num:3} else:\')'.format(**groups))
 
 def preproc_assign(groups, line, lines_out, logic_funcs):
-    # TODO: индекс
-    groups['format'] = expr_format(groups['assignexpr'])[0]
-    lines_out.append('{spaces}'
-                     'print(\'{num:3} {assignvar}{assign}\' + {format})'
-                     .format(**groups))
-    lines_out.append('{spaces}trace_res = {assignexpr}'.format(**groups))
-    lines_out.append('{spaces}'
-                     'print(\'    {assignvar}{assign}\' + repr(trace_res))'
-                     .format(**groups))
-    lines_out.append('{spaces}{assignvar}{assign}trace_res'.format(**groups))
+    if groups['index']:
+        groups['format'] = expr_format(groups['assignexpr'])[0]
+        lines_out.append('{spaces}trace_index = {index}'.format(**groups))
+        lines_out.append('{spaces}r_trace_index = repr(trace_index)'
+                         .format(**groups))
+        lines_out.append('{spaces}'
+                         'print(\'{num:3} {assignvar}[\' + r_trace_index + \']'
+                         '{assign}\' + {format})'
+                         .format(**groups))
+        lines_out.append('{spaces}trace_res = {assignexpr}'.format(**groups))
+        lines_out.append('{spaces}'
+                         'print(\'    {assignvar}[\' + r_trace_index +\']'
+                         '{assign}\' + repr(trace_res))'
+                         .format(**groups))
+        lines_out.append('{spaces}{assignvar}[trace_index]{assign}trace_res'
+                         .format(**groups))
+    else:
+        groups['format'] = expr_format(groups['assignexpr'])[0]
+        lines_out.append('{spaces}'
+                         'print(\'{num:3} {assignvar}{assign}\' + {format})'
+                         .format(**groups))
+        lines_out.append('{spaces}trace_res = {assignexpr}'.format(**groups))
+        lines_out.append('{spaces}'
+                         'print(\'    {assignvar}{assign}\' + repr(trace_res))'
+                         .format(**groups))
+        lines_out.append('{spaces}{assignvar}{assign}trace_res'.format(**groups))
 
 def preproc_comment(groups, line, lines_out, logic_funcs):
     lines_out.append(line)
@@ -97,7 +113,7 @@ def preproc_defkw(groups, line, lines_out, logic_funcs):
     groups['actual_params'] = ', '.join(vars)
     lines_out.append(line)
     lines_out.append('{spaces}    '
-                     'print(\'{num:3} in function {funcname}({formal_params})\''
+                     'print(\'{num:3} def {funcname}({formal_params})\''
                      '.format({actual_params}))'
                      .format(**groups))
 
@@ -126,6 +142,8 @@ VARIABLE=(r'((?P<variable>[A-Za-z]\w*\b(?![\x5B\x28]))'
           r'|(?P<quote>[\'"])([^\'"\\]|\\.)*(?P=quote)))')
 RE_VARIABLE=re.compile(VARIABLE)
 
+KEYWORDS = set(('and', 'or', 'not'))
+
 def expr_format(expr):
     format = ''
     vars = []
@@ -134,12 +152,15 @@ def expr_format(expr):
         var = token.group('variable')
         ivar = token.group('indexvar')
         if var:
-            format += '{{{}!r}}'.format(var)
-            if var not in vars:
-                vars += [var]
+            if var not in KEYWORDS:
+                format += '{{{}!r}}'.format(var)
+                if var not in (vars + ivars):
+                    vars += [var]
+            else:
+                format += var
         elif ivar:
             format += ivar
-            if ivar not in ivars:
+            if ivar not in (vars + ivars):
                 ivars += [ivar]
         else:
             format += token.group('novariable')

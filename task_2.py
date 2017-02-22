@@ -16,7 +16,8 @@ def gen_variants(varprefix = '2-1'):
                 task_1.gen_hex,
                 gen_square_equal(True),
                 gen_square_equal(False),
-                gen_findmax_normal]
+                gen_findmax_normal,
+                gen_unique]
 
     varset = set()
     with open('task_2_tasks.txt', 'w') as ftasks, \
@@ -88,6 +89,23 @@ def gen_findmax_normal():
         return 20 <= len(stdout) <= 30
 
     return ('task_2_findmax.py', 'findmax', genargs, valid)
+
+def gen_unique():
+    def genargs():
+        items_len = random.randint(0, 20)
+        randint = lambda: random.randint(-99, 99)
+        items = [randint()]
+        while items_len > 0:
+            items += [random.choice([randint(), random.choice(items)])]
+            items_len -= 1
+        return ((list, tuple(items)),)
+
+    def valid(args, result, stdout):
+        arg = taskgen.real_args(args)[0]
+        return (20 <= len(stdout) <= 30
+                and 1.1 <= len(arg) / len(result) <= 1.5)
+
+    return ('task_2_uniq.py', 'unique', genargs, valid)
 
 if __name__=='__main__':
     if len(sys.argv) > 2:
