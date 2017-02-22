@@ -35,7 +35,8 @@ def gen_gcd(no_zero):
 
     def gen_no_zero():
         return ('task_2_gcd.py', 'gcd', genargs,
-                lambda args, result, stdout: result >= 3 and 30 <= len(stdout) <= 40)
+                lambda args, result, stdout: (result >= 3
+                                              and 20 <= len(stdout) <= 30)
 
     def gen_zero():
         return ('task_2_gcd.py', 'gcd', genargs,
