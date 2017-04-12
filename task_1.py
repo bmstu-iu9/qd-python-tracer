@@ -149,7 +149,7 @@ def gen_findmax_normal():
     return ('task_1_findmax.py', 'findmax', genargs, valid)
 
 if __name__=='__main__':
-    if len(sys.argv) > 2:
-        gen_variants(os.argv[1])
+    if len(sys.argv) >= 2:
+        gen_variants(sys.argv[1])
     else:
         gen_variants()
