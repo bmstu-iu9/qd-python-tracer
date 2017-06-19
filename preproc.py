@@ -109,7 +109,7 @@ def preproc_comment(groups, line, lines_out, logic_funcs):
 
 def preproc_defkw(groups, line, lines_out, logic_funcs):
     (format, vars) = expr_format(groups['params'])
-    groups['formal_params'] = ', '.join(['{}={{}}'.format(arg) for arg in vars])
+    groups['formal_params'] = ', '.join(['{}={{!r}}'.format(arg) for arg in vars])
     groups['actual_params'] = ', '.join(vars)
     lines_out.append(line)
     lines_out.append('{spaces}    '

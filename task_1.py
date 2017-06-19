@@ -19,7 +19,7 @@ def gen_variants(varprefix = '1-1'):
                 gen_square_equal_d_neg(),
                 gen_square_equal_linear_valid(),
                 gen_square_equal_linear_invalid()]
-    taskgen.gen_variants(tasklist, varprefix, 50,
+    taskgen.gen_variants(tasklist, varprefix, 20,
                         'task_1_tasks.txt', 'task_1_answers.txt')
 
 def gen_gcd_no_zero():
