@@ -9,7 +9,6 @@ def gen_variants(tasklist, varprefix, count, tasks_name, answers_name):
     with open(tasks_name, 'w') as ftasks, \
          open(answers_name, 'w') as fanswers:
         for i in range(1, count + 1):
-            print(i, end='\r')
             var = '{varprefix}-{i}'.format(**locals())
             gen_variant(tasklist, var, varset, ftasks, fanswers)
 
@@ -22,6 +21,7 @@ def gen_variant(tasklist, var, varset, ftasks, fanswers):
     print('Вариант: ' + var, file = fanswers)
     for num, task in enumerate(tasklist):
         (filename, funcname, genargsfunc, validfunc) = task
+        print(var, num + 1, funcname, '           ', end='\r')
         (args, result, stdout) = gen_task(filename, funcname,
                                           genargsfunc, validfunc,
                                           num, varset)
@@ -55,7 +55,6 @@ def gen_task(source, funcname, genargsfunc, validfunc, num, varset):
             (result, stdout) = \
                 pex.exec_function_from(source, funcname, real_args(args))
             valid_task = validfunc(args, result, stdout)
-
-    varset.add((args, num))
+            varset.add((args, num))
 
     return (args, result, stdout)
