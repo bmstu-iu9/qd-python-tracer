@@ -75,11 +75,11 @@ def int_sqrt(x):
 
 def gen_factorize():
     def genargs():
-        n = random.randint(0, 1000)
+        n = random.randint(0, 2000)
         return (n,)
 
     def validargs(args, result, stdout):
-        return len(stdout) < 40
+        return len(stdout) < 35
 
     return ('fall_mod1_factorize.py', 'factorize', genargs, validargs)
 
@@ -92,11 +92,11 @@ def gen_remove_digit():
         while first_digit > 9:
             first_digit //= 10
 
-        diflen = random.choice([1, 1, 2, 3])
+        diflen = random.choice([1, 1, 2, 1, 3, 1])
         ls = lambda n: len(str(n))
 
         return (ls(args[0]) - ls(result) >= diflen
-                and first_digit != args[1] and len(stdout) < 40)
+                and first_digit != args[1] and len(stdout) < 35)
 
     return ('fall_mod1_remove_digit.py', 'remove_digit', genargs, validargs)
 

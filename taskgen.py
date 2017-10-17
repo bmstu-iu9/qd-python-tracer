@@ -13,7 +13,7 @@ def gen_variants(tasklist, varprefix, count, tasks_name, answers_name):
             gen_variant(tasklist, var, varset, ftasks, fanswers)
 
 def gen_variant(tasklist, var, varset, ftasks, fanswers):
-    print('Группа: Л4-2__, фамилия, имя ' + '_' * 35, file = ftasks)
+    print('Группа: Л4-1__, фамилия, имя ' + '_' * 35, file = ftasks)
     print('Вариант: ' + var, file = ftasks)
     print(file = ftasks)
     print('Выполните трассировку следующих вызовов функций:', file = ftasks)
@@ -55,6 +55,7 @@ def gen_task(source, funcname, genargsfunc, validfunc, num, varset):
             (result, stdout) = \
                 pex.exec_function_from(source, funcname, real_args(args))
             valid_task = validfunc(args, result, stdout)
-            varset.add((args, num))
+
+    varset.add((args, num))
 
     return (args, result, stdout)
