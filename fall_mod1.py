@@ -42,7 +42,10 @@ def gen_hex():
 
 def gen_square_equal(roots_count):
     def genargs():
-        a = random.randint(-100, 100)
+        if random.randint(0, 100) < 10:
+            a = 0
+        else:
+            a = random.randint(-100, 100)
         b = random.randint(-100, 100)
         c = random.randint(-100, 100)
         return (a, b, c)
